@@ -39,7 +39,8 @@ The repo is already initialized and committed locally. To go live:
    - `www` → `CNAME` to `<your-username>.github.io`
 3. In repo Settings → Pages, set the custom domain and enable **Enforce HTTPS**.
 
-## Before launch — confirm two placeholders
+## Contact wiring
 
-- **Booking link** — CTAs currently use `mailto:StanV@lodestarcaio.com`. Add a scheduling URL if you have one.
-- **Phone** — intentionally omitted (placeholder in the brand kit). Add to the footer if desired.
+- **Booking** — primary "Snapshot" CTAs open the Google Calendar booking page: <https://calendar.app.google/qBp6McgzXVwvroJd9>
+- **Email** — `StanV@lodestarcaio.com`
+- **Phone** — `(818) 259-0667` (`tel:+18182590667`), in the contact areas and footer.
