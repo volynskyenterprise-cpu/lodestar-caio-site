@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lodestar CAIO — Practice Operating System</title>
+<style>
+  :root{
+    --navy:#16223a; --navy2:#1f2f4d; --slate:#33425b; --ink:#1a2233;
+    --line:#dfe4ec; --bg:#f4f6fa; --card:#ffffff; --muted:#637089;
+    --accent:#c8a24a; --accent2:#a8842f;
+    --green:#1f8a4c; --greenbg:#e7f5ec; --yellow:#b07c12; --yellowbg:#fbf2dc; --red:#b3261e; --redbg:#fbe7e6;
+    --blue:#2563a8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.5}
+  a{color:var(--blue);text-decoration:none}
+  .app{display:flex;min-height:100vh}
+  /* Sidebar */
+  .side{width:240px;background:var(--navy);color:#dde4f0;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+  .brand{padding:20px 18px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .brand .logo{font-weight:800;font-size:19px;letter-spacing:.3px;color:#fff}
+  .brand .logo span{color:var(--accent)}
+  .brand .tag{font-size:11px;color:#93a1bd;margin-top:3px;text-transform:uppercase;letter-spacing:.8px}
+  nav{padding:10px 8px;flex:1;overflow:auto}
+  nav button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:#c2cce0;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14px;text-align:left;margin-bottom:2px}
+  nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+  nav button.active{background:var(--accent);color:#1a2233;font-weight:600}
+  nav .ico{width:18px;text-align:center;font-size:15px}
+  .side .foot{padding:12px 16px;font-size:11px;color:#7f8db0;border-top:1px solid rgba(255,255,255,.08)}
+  /* Main */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .top{background:var(--card);border-bottom:1px solid var(--line);padding:14px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+  .top h1{font-size:18px;margin:0;font-weight:700}
+  .top .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .content{padding:24px 26px;max-width:1100px}
+  /* Components */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:18px}
+  .card h2{margin:0 0 4px;font-size:16px}
+  .card h3{margin:18px 0 8px;font-size:14px;color:var(--slate)}
+  .card .desc{color:var(--muted);font-size:13px;margin-bottom:14px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:880px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .kpi .n{font-size:30px;font-weight:800;color:var(--navy)}
+  .kpi .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+  label{display:block;font-size:12px;font-weight:600;color:var(--slate);margin:10px 0 4px}
+  input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
+  textarea{min-height:80px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer}
+  .btn:hover{background:var(--navy2)}
+  .btn.gold{background:var(--accent);color:#1a2233}
+  .btn.gold:hover{background:var(--accent2)}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f0f3f8}
+  .btn.sm{padding:6px 11px;font-size:12px}
+  .btn.danger{background:#fff;color:var(--red);border:1px solid #e7c6c4}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+  .row>div{flex:1;min-width:140px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  tr:hover td{background:#fafbfd}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+  .pill.green{background:var(--greenbg);color:var(--green)} .pill.yellow{background:var(--yellowbg);color:var(--yellow)} .pill.red{background:var(--redbg);color:var(--red)} .pill.gray{background:#eef1f6;color:var(--muted)} .pill.blue{background:#e7f0fa;color:var(--blue)}
+  .seg-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .seg-tabs button{padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;color:var(--slate)}
+  .seg-tabs button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .q{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+  .q .qt{font-weight:600;font-size:14px;margin-bottom:8px}
+  .q .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .q .opts button{border:1px solid var(--line);background:#fff;padding:5px 12px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted)}
+  .q .opts button.on.green{background:var(--green);color:#fff;border-color:var(--green)}
+  .q .opts button.on.yellow{background:var(--yellow);color:#fff;border-color:var(--yellow)}
+  .q .opts button.on.red{background:var(--red);color:#fff;border-color:var(--red)}
+  .q .opts button.on.na{background:var(--slate);color:#fff;border-color:var(--slate)}
+  .readout{border:1px solid var(--line);border-radius:10px;padding:18px;background:#fff;margin-top:16px}
+  .ex{border-left:4px solid var(--line);padding:8px 12px;margin:8px 0;background:#fafbfd;border-radius:0 8px 8px 0}
+  .ex.red{border-color:var(--red)} .ex.yellow{border-color:var(--yellow)} .ex.green{border-color:var(--green)}
+  .ex .move{font-size:12px;color:var(--slate);margin-top:3px}
+  .out{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:#fbfcfe;border:1px solid var(--line);border-radius:8px;padding:14px;margin-top:10px;line-height:1.55}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 0}
+  .empty{color:var(--muted);font-size:13px;padding:14px;text-align:center}
+  .note{font-size:12px;color:var(--muted);background:#f6f8fb;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+  .scorebar{height:10px;border-radius:6px;background:#eef1f6;overflow:hidden;display:flex;margin:6px 0}
+  .scorebar i{display:block;height:100%}
+  .badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px}
+  .legend{font-size:11px;color:var(--muted);margin-top:6px}
+  .inline{display:flex;gap:8px;align-items:center}
+  .hidden{display:none!important}
+  @media print{
+    .side,.top,.toolbar,.noprint{display:none!important}
+    .content{padding:0;max-width:none}
+    .card{border:none;padding:0}
+    body{background:#fff}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="logo">LODESTAR<span> CAIO</span></div>
+      <div class="tag">Practice Operating System</div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="foot">Local &amp; private — data stays in this browser. <br>v1.0 · 2026</div>
+  </aside>
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1 id="pgTitle">Dashboard</h1>
+        <div class="sub" id="pgSub"></div>
+      </div>
+      <div class="inline noprint">
+        <button class="btn ghost sm" onclick="exportData()">⭳ Export data</button>
+        <button class="btn gold sm" id="topAction" onclick="go('snapshot')">+ New Snapshot</button>
+      </div>
+    </div>
+    <div class="content" id="view"></div>
+  </main>
+</div>
+
+<script>
+/* ============================== DATA / STATE ============================== */
+const KEY="lodestar_caio_v1";
+const SEG={
+  broker:{name:"Broker / Firm",short:"Broker"},
+  agent:{name:"Agent / Salesperson",short:"Agent"},
+  escrow:{name:"Escrow Co. / Officer",short:"Escrow"},
+  title:{name:"Title Co. / Officer",short:"Title"},
+  appraisal:{name:"Appraisal / Valuation",short:"Appraisal"}
+};
+const SEGLIST=Object.keys(SEG);
+
+const DEFAULTS={
+  identity:{name:"Stan Volynsky",practice:"Lodestar CAIO",email:"StanV@lodestarcaio.com",intake:"Advisory@lodestarcaio.com",phone:"(818) 259-0667",booking:"https://calendar.app.google/qBp6McgzXVwvroJd9",
+    creds:"California-certified appraiser (BREA AR035422) · Licensed broker (CA DRE 01495869) · 20+ years in the LA market"},
+  clients:[
+    {id:uid(),firm:"Wilshire Escrow",contact:"Eric Shewfelt",segment:"escrow",stage:"Snapshot booked",nextAction:"Run Snapshot",lastTouch:"2026-06-15"},
+    {id:uid(),firm:"Barbara Baker Realty",contact:"Barbara Baker",segment:"broker",stage:"Contacted",nextAction:"Follow up",lastTouch:"2026-06-14"},
+    {id:uid(),firm:"Sail Escrow",contact:"Johnny Jansen",segment:"escrow",stage:"Not contacted",nextAction:"Send warm email",lastTouch:""}
+  ],
+  snapshots:[], policies:[], vendors:[], risks:[], proposals:[],
+  engagements:[
+    {id:uid(),firm:"Wilshire Escrow",contact:"Eric Shewfelt",segment:"escrow",type:"Retainer",status:"Active",start:"2026-06-20",days:"2",term:"Month-to-month",renewal:"2026-07-20",fee:"Scoped per engagement",scope:"WISP AI addendum · wire-verification checklist · vendor AI review · monthly oversight",notes:""}
+  ]
+};
+const STAGES=["Not contacted","Contacted","Replied","Snapshot booked","Snapshot done","Discovery","Proposal","Closed","Passed"];
+
+let state=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(!s||!s.identity)return structuredClone(DEFAULTS);["clients","snapshots","policies","vendors","risks","engagements","proposals"].forEach(k=>{if(!Array.isArray(s[k]))s[k]=[];});return s;}catch(e){return structuredClone(DEFAULTS);}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function uid(){return Math.random().toString(36).slice(2,9);}
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function today(){return new Date().toISOString().slice(0,10);}
+
+/* ============================== SNAPSHOT CONTENT ============================== */
+/* Each question: status set by user (green/yellow/red/na). exposure + move used in readout. */
+const SNAP={
+  broker:[
+    {q:"Is there a written firm AI-use policy in place?",exp:"No written policy — verbal 'don't' isn't supervision",move:"Deploy the one-page firm AI policy + agent acknowledgement."},
+    {q:"Is AI-assisted marketing reviewed for fair housing before it publishes?",exp:"Fair-housing language / steering in AI-written marketing",move:"Add the mandatory fair-housing review checklist (property-not-people)."},
+    {q:"Are AI-altered / virtually-staged images disclosed?",exp:"Undisclosed AI image edits — misrepresentation risk",move:"Set a disclosure standard for AI-altered images."},
+    {q:"Is client / buyer data kept out of consumer AI tools?",exp:"Client PII pasted into ungoverned tools",move:"Approved-tool list + data rule; block PII in consumer tools."},
+    {q:"Are AI text/call campaigns run with TCPA consent & DNC?",exp:"AI outreach without consent / opt-out (TCPA)",move:"TCPA checklist: consent, DNC, working opt-out, human review."},
+    {q:"Does the broker know which AI features marketing vendors enabled?",exp:"Unvetted vendor AI features",move:"Vendor AI due-diligence step before features are used."},
+    {q:"Are AI 'valuations' kept within CMA/BPO scope?",exp:"AI value claims drifting toward unlicensed appraisal",move:"Keep value claims in scope with disclaimers; appraiser owns value."}
+  ],
+  agent:[
+    {q:"Does the agent self-check listings for fair-housing language?",exp:"Steering / code words in published copy",move:"Agent do/don't card + fair-housing self-check."},
+    {q:"Are AI-generated property facts verified (sqft, permits, schools)?",exp:"Unverified AI facts — misrepresentation",move:"Verify-before-publish rule on all AI facts."},
+    {q:"Is consent captured before AI note-takers record client calls?",exp:"Recording without all-party consent (CIPA)",move:"All-party consent before any AI recording."},
+    {q:"Are AI-altered images disclosed?",exp:"Undisclosed virtual staging / edits",move:"Disclose AI image alterations."},
+    {q:"Is client financial / ID data kept out of free chatbots?",exp:"PII into consumer AI tools",move:"No client PII in unapproved tools."},
+    {q:"Are AI value claims kept inside CMA/BPO scope?",exp:"AI 'worth $X' beyond license scope",move:"Stay within CMA/BPO scope and disclaimers."}
+  ],
+  escrow:[
+    {q:"Is NPI kept out of any AI tool not covered by the WISP?",exp:"NPI in ungoverned AI tool — Safeguards violation",move:"AI addendum to the WISP; approved NPI-capable tools only."},
+    {q:"Does the WISP / security program address AI at all?",exp:"Security program silent on AI",move:"Add AI section to the WISP."},
+    {q:"Are wire / payoff verifications done out-of-band by a person?",exp:"Wire verification beatable by AI deepfake / phishing",move:"AI-aware wire-verification checklist; independent callback only."},
+    {q:"Are AI features in escrow software reviewed before enabling?",exp:"Unreviewed vendor AI touching NPI",move:"Vendor AI due diligence; no-training terms; breach terms."},
+    {q:"Do AI auto-responders avoid collecting NPI in the clear?",exp:"Customer-facing AI collecting NPI insecurely",move:"Route NPI to secure channels; review chat/auto-responder."},
+    {q:"Is there an incident path aware of the 30-day Safeguards clock?",exp:"No path for the ≤30-day FTC breach report (≥500 consumers)",move:"Incident plan tied to the 30-day reporting clock."},
+    {q:"Is AI note-taking on signings/calls consented & stored securely?",exp:"Recordings with NPI / no consent",move:"All-party consent; store under the security program."}
+  ],
+  title:[
+    {q:"Does a qualified human own every title determination (AI assists only)?",exp:"AI producing determinations without human ownership",move:"Title-AI review standard: human verifies all material findings."},
+    {q:"Does the WISP / ALTA Pillar 3 plan address AI & vendor AI?",exp:"Pillar 3 gap for AI tools touching NPI",move:"AI addendum mapped to ALTA Pillar 3 + Safeguards."},
+    {q:"Are Pillar 2 wire controls written against AI-amplified fraud?",exp:"Wire controls not deepfake-aware",move:"AI-aware wire verification (ALTA Pillar 2)."},
+    {q:"Are vendor AI features reviewed under Pillar 3 oversight?",exp:"Unreviewed vendor AI in title software",move:"Pillar 3 third-party AI review before enabling."},
+    {q:"Is NPI kept out of ungoverned AI tools?",exp:"NPI in ungoverned tool — Safeguards / Pillar 3",move:"Approved NPI tools only; no-training terms."},
+    {q:"Are AI document summaries verified before reliance?",exp:"Reliance on AI summary for the determination",move:"Human verifies exceptions/liens/vesting/legal description."},
+    {q:"Is there an incident path aware of the 30-day Safeguards clock?",exp:"No ≤30-day breach-report path",move:"Incident plan tied to the 30-day clock."}
+  ],
+  appraisal:[
+    {q:"Is the appraiser of record fully responsible for AI-assisted analysis?",exp:"AI assistance not owned by the appraiser (USPAP)",move:"Document AI assistance in the workfile; appraiser owns conclusions."},
+    {q:"Is AI prevented from determining or supporting a predetermined value?",exp:"AI used to reach/justify a number not independently supported",move:"Prohibit predetermined-value use; independent support required."},
+    {q:"Is AI input screened for fair-lending / disparate impact?",exp:"Bias / disparate impact in valuation inputs",move:"Bias testing before & during use (fair lending)."},
+    {q:"If an AVM is used in covered work, are the 5 QC factors met?",exp:"AVM without the quality-control program (eff. Oct 2025)",move:"Stand up the AVM five-factor QC program."},
+    {q:"Is confidential client/borrower data kept out of consumer tools?",exp:"Confidential data in ungoverned tools",move:"Approved tools only; no-training terms."},
+    {q:"Is significant AI assistance documented in the workfile?",exp:"Undocumented AI reliance (USPAP recordkeeping)",move:"Record AI tools & assistance in the workfile."}
+  ]
+};
+
+/* ============================== POLICY TEMPLATES ============================== */
+function policyBrokerage(d){return `AI USE POLICY — ${d.firm||"[Firm Name]"}
+Real Estate Brokerage (brokers & salespersons)
+
+Effective date: ${d.date||today()}   Responsible broker: ${d.broker||"[name, DRE #]"}   Questions to: ${d.contact||d.email||"[contact]"}
+
+WHY THIS POLICY EXISTS
+AI tools are useful and already in use at this firm. This policy says which tools are approved, what client information must never go into them, and the one review step every piece of AI-assisted marketing must pass before it publishes. The responsible broker is accountable for what agents publish under the firm's name; this is how we meet that responsibility.
+
+THE THREE RULES THAT MATTER MOST
+1. People decide and sign. AI drafts; a licensed person reviews, verifies, and owns every output that leaves the firm.
+2. No client data in unapproved tools. Never paste client/buyer financials, IDs, pre-approvals, or contracts into a consumer AI tool. Approved tools only.
+3. Fair-housing review before publish. Every AI-assisted listing, ad, caption, email, or image passes the fair-housing check below before it goes out.
+
+FAIR-HOUSING REVIEW (mandatory, before publish)
+- Describe the property, not the people. No reference to or preference for any protected class — directly or by code word.
+- No "code words" (e.g., "great for families", "safe/exclusive neighborhood", "walk to [house of worship]").
+- No steering: don't characterize neighborhoods by who lives there.
+- Facts verified: sqft, beds/baths, permits, schools, HOA, price — AI invents these.
+- AI-altered images disclosed; never misrepresent condition.
+
+CLIENT OUTREACH (texts/calls/email)
+AI-drafted or AI-placed texts/calls follow TCPA: prior consent, DNC compliance, working opt-out. A licensed person reviews AI-drafted client messages before sending.
+
+RECORDING & CONSENT
+No AI note-taker records a client call/meeting without all-party consent (California).
+
+VALUATION GUARDRAIL
+Do not present AI "valuations" as appraisals or supported value. Keep CMAs/BPOs in scope with disclaimers.
+
+CONFIDENTIALITY & DATA
+Treat client information as confidential. Approved tools must not train on our data.
+
+IF SOMETHING GOES WRONG
+Tell the responsible broker immediately if an AI-assisted fair-housing problem went out, client data went into an unapproved tool, or a wrong AI output reached a client.
+
+ACKNOWLEDGEMENT
+Name: __________________  DRE #: __________  Signature: __________________  Date: ________
+
+Maintained with ${d.practice||"Lodestar CAIO"}. Review at least annually and when tools or rules change. Not legal advice.`;}
+
+function policyEscrowTitle(d){return `AI USE POLICY — ${d.firm||"[Company Name]"}
+Escrow & Title (AI addendum to your Information Security Program)
+
+Effective date: ${d.date||today()}   Qualified individual / ISP owner: ${d.broker||"[name]"}   Questions to: ${d.contact||d.email||"[contact]"}
+
+WHY THIS POLICY EXISTS
+This company is a financial institution under Gramm-Leach-Bliley and holds the most sensitive data and the money in the transaction. This policy governs AI so it doesn't create a breach, a Safeguards violation, or a fraud loss. It sits alongside your WISP and (title) ALTA Best Practices program.
+
+THE THREE RULES THAT MATTER MOST
+1. NPI never goes into an unapproved AI tool. No customer financials, SSNs, account numbers, IDs, or closing figures into a consumer/free AI tool. Approved, WISP-covered, no-training tools only.
+2. AI never verifies a wire or payoff. Funds and payoff instructions are verified out-of-band by a person using independently obtained numbers — assuming any inbound email or voice may be AI-generated/deepfaked.
+3. A qualified person owns every determination. AI may assist with summaries and document handling; a licensed/qualified human owns every title determination and disbursement decision.
+
+APPROVED TOOLS & VENDOR AI
+Use only tools on the approved-tool list; NPI-capable tools must be inside the WISP, access-controlled, encrypted, and contractually prohibited from training on our data. Vendor AI features are reviewed before use (where does data go, is NPI exposed, training disabled, breach terms). For title, this is ALTA Pillar 3 third-party oversight.
+
+WIRE FRAUD & DEEPFAKES (AI-aware verification)
+Verify all wire/payoff instructions by independent callback to a number you obtained yourself — never one from the inbound email/call. Treat unexpected changes as fraud until verified. A convincing voice or perfect email is not verification.
+
+NPI HANDLING (Safeguards / ALTA Pillar 3)
+Outputs that summarize NPI are themselves NPI. Customer-facing AI must not collect NPI in the clear. Limit access to staff who need it.
+
+DOCUMENT & DETERMINATION HANDLING
+AI may assist; the responsible person verifies every material item (exceptions, liens, vesting, legal description, figures) before relying on it.
+
+INCIDENTS (THE 30-DAY CLOCK)
+Report immediately if NPI may have been exposed to an AI tool, or any suspected AI-driven fraud. A security event involving the unencrypted NPI of 500+ consumers must be reported to the FTC as soon as possible and within 30 days of discovery.
+
+ACKNOWLEDGEMENT
+Name: __________________  Role: __________  Signature: __________________  Date: ________
+
+Maintained with ${d.practice||"Lodestar CAIO"}. Integrate with your WISP and (title) ALTA program. Review at least annually. Not legal advice.`;}
+
+/* ============================== OUTREACH TEMPLATES ============================== */
+function sig(){const i=state.identity;return `${i.name}\n${i.practice}\n${i.creds}\n${i.email} · ${i.phone}\nBook a Snapshot: ${i.booking}`;}
+const OUTREACH={
+  broker:(d)=>`Subject: the AI your agents are using — and the license you hold for it
+
+${d.first||"[First name]"} — I run a fractional AI-governance practice for regulated real-estate firms (${state.identity.practice}), and ${d.firm||"[Firm]"} came to mind.
+
+Your agents are almost certainly using AI already — listing copy, images, outreach — and you hold the broker license for what publishes under the firm's name. AI-written marketing is exactly where fair-housing language and steering slip in, and "we told them not to" isn't supervision. A generic AI consultant doesn't know that surface; I've spent 20+ years inside it.
+
+Free 30-minute Snapshot, written readout of where your exposure sits, plus the one-page policy and review step that closes most of it. No cost, you keep the readout.
+
+${d.hook||"[hook — a real detail about their firm/listings]"}
+
+Worth 30 minutes?
+
+${sig()}`,
+  agent:(d)=>`Subject: a 30-min look before an AI post becomes a problem
+
+${d.first||"[First name]"} — your team's putting out a lot of AI-assisted content; a 30-minute look tells you where the fair-housing and disclosure lines are before one of those posts becomes a problem.
+
+Free Snapshot, written readout, and a one-page do/don't card your agents can actually use. No cost.
+
+${d.hook||"[hook — something specific about their team/listings]"}
+
+${sig()}`,
+  escrow:(d)=>`Subject: AI in your escrow stack — a free 30-min look against Safeguards & ALTA
+
+${d.first||"[First name]"} — I'm a California-certified appraiser and licensed broker, 20+ years in the LA market, and I run a fractional AI-governance practice for regulated real-estate firms (${state.identity.practice}).
+
+Escrow is the tightest fit for this work: you're a financial institution under GLBA, you hold the NPI and the money, and AI is now in your stack — staff tools, vendor features, auto-responders — mostly ungoverned against the Safeguards Rule. The breach amendment puts a 30-day clock on any NPI leak, and AI has made wire-fraud phishing and voice deepfakes good enough to beat verification that wasn't written to expect them.
+
+Free 30-minute Snapshot: a written readout of where your real exposure sits and the first moves to close it. No cost, you keep the readout.
+
+${d.hook||"[hook — one specific thing about their firm]"}
+
+Worth 30 minutes?
+
+${sig()}`,
+  title:(d)=>`Subject: AI in your title stack — mapped to ALTA Pillars 2 & 3
+
+${d.first||"[First name]"} — I run a fractional AI-governance practice for regulated real-estate firms (${state.identity.practice}).
+
+Your underwriters expect ALTA Best Practices; the piece nobody's mapped is where AI in your title and closing stack lands against Pillar 3 (NPI/vendor oversight) and Pillar 2 (wire controls). AI is moving into search and exam fast — the exposure isn't the tool, it's whether a person still owns the determination and whether NPI stays inside your security plan.
+
+Free 30-minute Snapshot, written readout, and an AI addendum mapped to the pillars and the Safeguards Rule. No cost.
+
+${d.hook||"[hook — a real detail about their operation]"}
+
+${sig()}`,
+  appraisal:(d)=>`Subject: keeping AI out of your appraisal-independence problem
+
+${d.first||"[First name]"} — I run a fractional AI-governance practice for regulated real-estate firms (${state.identity.practice}), and I come at appraisal from inside it.
+
+AI-assisted comp work and narrative can quietly compromise independence or drift toward a predetermined value, and the AVM quality-control rule is now in force for covered work. A 30-minute Snapshot shows where your AI use sits against USPAP and fair lending, with a written readout you keep.
+
+${d.hook||"[hook]"}
+
+${sig()}`,
+  partner:(d)=>`Subject: a quick intro ask — and something your clients might want
+
+${d.first||"[First name]"} — alongside the appraisal and brokerage work, I've started ${state.identity.practice}, a fractional Chief AI Officer practice for regulated real-estate firms.
+
+AI is already inside most firms — staff using ChatGPT, AI-drafted marketing, vendor tools nobody vetted — with no governance against the rules they operate under: fair housing, USPAP, GLBA/Safeguards, RESPA. You sit across from exactly the principals who need this. If anyone comes to mind, an intro is the best thing you could send me — I'm doing free 30-minute Snapshots this month.
+
+And if your own practice is wrestling with where AI fits against your compliance obligations, the same offer stands.
+
+${d.hook||""}
+
+${sig()}`
+};
+
+/* ============================== KNOWLEDGE BASE ============================== */
+const KB={
+  broker:{title:"Brokers — regulatory surface",items:[
+    ["Fair Housing (FHAct + CA FEHA)","AI marketing drifts into protected-class language, code words, steering. Broker owns what publishes."],
+    ["Broker supervision (CA DRE)","Responsible broker must supervise agents' advertising. A written policy + review step is the control."],
+    ["AI image honesty","Virtual staging / AI edits generally must be disclosed; misrepresentation of condition is exposure."],
+    ["TCPA","AI-drafted/placed texts & calls still need consent, DNC, opt-out. FCC treats AI-voice as 'artificial.'"],
+    ["CCPA/CPRA","Client data in ungoverned tools is a privacy exposure."],
+    ["NAR Code of Ethics","Article 10 non-discrimination + truthfulness apply to AI-assisted conduct."]
+  ]},
+  agent:{title:"Agents — regulatory surface",items:[
+    ["Fair Housing","Agent is author of record for AI copy/images — steering & code words are the classic failure."],
+    ["CIPA (CA all-party consent)","AI note-takers recording client calls without consent is wiretapping exposure."],
+    ["Misrepresentation","AI hallucinates sqft, permits, schools; verify before publish."],
+    ["Confidentiality","Buyer financials/IDs must not go into consumer tools."],
+    ["License scope","AI 'valuations' must stay within CMA/BPO scope."]
+  ]},
+  escrow:{title:"Escrow — regulatory surface",items:[
+    ["GLBA / FTC Safeguards Rule","Escrow is a covered non-bank financial institution. WISP, access control, encryption, vendor oversight."],
+    ["Breach notification (eff. May 13, 2024)","Notify FTC ASAP, ≤30 days, for events involving ≥500 consumers' unencrypted NPI."],
+    ["Wire fraud / BEC (AI-amplified)","Deepfake voice + perfect phishing. Verify out-of-band; assume inbound is machine-made."],
+    ["RESPA Section 8","AI lead/co-marketing tools can become illegal referral arrangements."],
+    ["CA Escrow Law (DFPI)","Licensing, trust-account, recordkeeping apply regardless of tooling."],
+    ["ESIGN/UETA","AI document workflows must preserve valid execution & records."]
+  ]},
+  title:{title:"Title — regulatory surface",items:[
+    ["GLBA / FTC Safeguards Rule","Same as escrow — WISP, NPI protection, 30-day / ≥500 breach notice."],
+    ["ALTA Best Practices (v4.2, eff. Aug 19, 2025)","Seven pillars. Pillar 2: escrow trust accounting / wire controls. Pillar 3: protecting NPI, vendor oversight, incident response."],
+    ["Accuracy & liability","AI search/exam can miss exceptions, liens, vesting. A human owns the determination."],
+    ["RESPA Section 8","AI marketing/JV/lead tools and the anti-kickback rule."],
+    ["Underwriter / state requirements","CPL, licensing, underwriter standards apply regardless of tooling."]
+  ]},
+  appraisal:{title:"Appraisal — regulatory surface",items:[
+    ["USPAP","Appraiser of record stays responsible; document AI assistance; 2024 Nondiscrimination ETHICS RULE (AO-39/40)."],
+    ["Fair lending","FHAct/ECOA/Civil Rights Act 1866; disparate treatment & impact in valuation inputs."],
+    ["AVM QC Rule (eff. Oct 1, 2025)","Five factors: confidence, anti-manipulation, conflict avoidance, random sample testing, nondiscrimination."],
+    ["Appraiser independence","AI must not compromise independence or support a predetermined value."]
+  ]}
+};
+const FAQ=[
+  ["Isn't this just hiring a consultant?","A consultant hands you a deck and leaves. A fractional CAIO owns the outcome on an ongoing basis — the policy, the tool decisions, the guardrails — and knows the regulatory surface you operate under. That gap is where the liability hides."],
+  ["We don't really use AI.","Almost every firm says that and is wrong. The tools came in through staff, not strategy. That's exactly what the Snapshot surfaces."],
+  ["We're escrow/title — we already have a WISP and follow ALTA.","Both were written before AI was in your stack. I add the AI layer they're missing, in your language: Safeguards and the pillars."],
+  ["Doesn't our software vendor handle the AI piece?","A vendor turns features on. They won't tell you where your NPI goes or whether they train on it — and under Pillar 3 that oversight is your obligation."],
+  ["I'm a broker — my agents use AI, not me.","You hold the license for what they publish. Fair-housing language in an AI listing, a client file in a chatbot — that runs to you."],
+  ["Will you sell us AI tools?","No. Independent of any vendor. No referral fees, no kickbacks — that independence is the point."],
+  ["Are you a lawyer? Is this legal advice?","No. I build governance that respects fair housing, USPAP, GLBA/Safeguards, ALTA, and data-licensing terms — and I tell you when something needs your counsel."]
+];
+
+/* ============================== ROUTER ============================== */
+const ROUTES=[
+  ["dashboard","Dashboard","◆"],
+  ["snapshot","AI Governance Snapshot","◎"],
+  ["proposals","Proposal Generator","§"],
+  ["policies","Policy Generator","▤"],
+  ["vetting","Tool / Vendor Vetting","⚑"],
+  ["risks","Risk Register","⚠"],
+  ["clients","Clients & Pipeline","☷"],
+  ["engagements","Engagements & Retainers","◷"],
+  ["outreach","Outreach Studio","✉"],
+  ["knowledge","Knowledge Base","📚"],
+  ["settings","Settings","⚙"]
+];
+let route="dashboard";
+function go(r){route=r;render();window.scrollTo(0,0);}
+function buildNav(){document.getElementById("nav").innerHTML=ROUTES.map(([r,l,i])=>
+  `<button class="${r===route?'active':''}" onclick="go('${r}')"><span class="ico">${i}</span>${l}</button>`).join("");}
+
+function render(){
+  buildNav();
+  const meta=ROUTES.find(x=>x[0]===route);
+  document.getElementById("pgTitle").textContent=meta[1];
+  const subs={dashboard:"Pipeline, KPIs, and quick actions",snapshot:"Score a firm's AI exposure and generate the written readout",proposals:"Turn a saved Snapshot into a scoped engagement proposal",policies:"Generate a deployable AI-use policy",vetting:"Assess an AI tool or vendor before approval",risks:"Track client AI risks and mitigations",clients:"Manage prospects and engagements through the pipeline",engagements:"Track active engagements, retainers, and renewals",outreach:"Generate segment-specific outreach drafts",knowledge:"Regulatory surface and FAQ by segment",settings:"Identity, signature, and data"};
+  document.getElementById("pgSub").textContent=subs[route]||"";
+  const ta=document.getElementById("topAction");
+  ta.classList.toggle("hidden",route==="snapshot");
+  document.getElementById("view").innerHTML=VIEWS[route]();
+  if(route==="snapshot")initSnapshot();
+  if(route==="policies")buildPolicy();
+  if(route==="vetting")buildVet();
+  if(route==="outreach")buildOut();
+  if(route==="proposals")buildProposal();
+}
+
+/* ============================== VIEWS ============================== */
+const VIEWS={};
+
+VIEWS.dashboard=function(){
+  const c=state.clients;
+  const counts={};STAGES.forEach(s=>counts[s]=c.filter(x=>x.stage===s).length);
+  const active=c.filter(x=>!["Closed","Passed"].includes(x.stage)).length;
+  const activeEng=state.engagements.filter(e=>e.status==="Active").length;
+  const kpi=(n,l)=>`<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  const bySeg=SEGLIST.map(s=>`${SEG[s].short}: <b>${c.filter(x=>x.segment===s).length}</b>`).join(" · ");
+  const funnel=STAGES.map(s=>`<tr><td>${s}</td><td><b>${counts[s]}</b></td></tr>`).join("");
+  const acts=c.filter(x=>x.nextAction).slice(0,6).map(x=>`<tr><td>${esc(x.firm)}</td><td><span class="pill blue">${SEG[x.segment].short}</span></td><td>${esc(x.stage)}</td><td>${esc(x.nextAction)}</td></tr>`).join("")||`<tr><td colspan=4 class="empty">No actions yet</td></tr>`;
+  return `
+  <div class="grid g4">
+    ${kpi(active,"Active prospects")}
+    ${kpi(state.snapshots.length,"Snapshots run")}
+    ${kpi(activeEng,"Active engagements")}
+    ${kpi(counts["Closed"],"Closed")}
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h2>Pipeline</h2><div class="desc">${bySeg}</div><table>${funnel}</table></div>
+    <div class="card"><h2>Next actions</h2><table><tr><th>Firm</th><th>Seg</th><th>Stage</th><th>Action</th></tr>${acts}</table></div>
+  </div>
+  <div class="card">
+    <h2>Quick start</h2>
+    <div class="desc">Every engagement is the same shape: free Snapshot → written readout → policy + guardrails → ongoing oversight.</div>
+    <div class="toolbar">
+      <button class="btn gold" onclick="go('snapshot')">◎ Run a Snapshot</button>
+      <button class="btn" onclick="go('proposals')">§ Build a proposal</button>
+      <button class="btn" onclick="go('policies')">▤ Generate a policy</button>
+      <button class="btn" onclick="go('outreach')">✉ Draft outreach</button>
+      <button class="btn ghost" onclick="go('engagements')">◷ Engagements</button>
+    </div>
+  </div>`;
+};
+
+/* ---------- SNAPSHOT ---------- */
+let snapSeg="escrow";let snapAns={};let snapFirm="";
+VIEWS.snapshot=function(){
+  return `
+  <div class="card noprint">
+    <h2>1 · Select segment & firm</h2>
+    <div class="seg-tabs" id="snapTabs">${SEGLIST.map(s=>`<button data-s="${s}" class="${s===snapSeg?'active':''}">${SEG[s].name}</button>`).join("")}</div>
+    <div class="row">
+      <div><label>Firm / contact</label><input id="snapFirm" placeholder="e.g., Wilshire Escrow — Eric Shewfelt" value="${esc(snapFirm)}"></div>
+      <div style="flex:0"><label>&nbsp;</label><button class="btn ghost" onclick="resetSnap()">Clear answers</button></div>
+    </div>
+  </div>
+  <div class="card noprint">
+    <h2>2 · Score the tripwires</h2>
+    <div class="desc">Mark each: <span class="pill green">Green</span> fine · <span class="pill yellow">Yellow</span> in use, ungoverned · <span class="pill red">Red</span> active exposure · <span class="pill gray">N/A</span></div>
+    <div id="snapQs"></div>
+  </div>
+  <div id="snapOut"></div>`;
+};
+function initSnapshot(){
+  document.querySelectorAll("#snapTabs button").forEach(b=>b.onclick=()=>{snapSeg=b.dataset.s;snapAns={};render();});
+  const fi=document.getElementById("snapFirm");if(fi)fi.oninput=e=>snapFirm=e.target.value;
+  renderSnapQs();
+}
+function renderSnapQs(){
+  const qs=SNAP[snapSeg];
+  document.getElementById("snapQs").innerHTML=qs.map((o,i)=>{
+    const v=snapAns[i]||"";
+    const b=(val,lbl,cls)=>`<button class="${v===val?'on '+cls:''}" onclick="setAns(${i},'${val}')">${lbl}</button>`;
+    return `<div class="q"><div class="qt">${i+1}. ${esc(o.q)}</div><div class="opts">
+      ${b('green','Green','green')}${b('yellow','Yellow','yellow')}${b('red','Red','red')}${b('na','N/A','na')}</div></div>`;
+  }).join("");
+  renderReadout();
+}
+function setAns(i,v){snapAns[i]=v;renderSnapQs();}
+function resetSnap(){snapAns={};renderSnapQs();}
+function renderReadout(){
+  const qs=SNAP[snapSeg];
+  const answered=Object.keys(snapAns).length;
+  const reds=[],yellows=[],greens=[];
+  qs.forEach((o,i)=>{const v=snapAns[i];if(v==='red')reds.push(o);else if(v==='yellow')yellows.push(o);else if(v==='green')greens.push(o);});
+  const scored=reds.length+yellows.length+greens.length;
+  const risk=scored?Math.round(((reds.length*2+yellows.length)/(scored*2))*100):0;
+  const level=risk>=50?'red':risk>=20?'yellow':'green';
+  const levelTxt=level==='red'?'HIGH exposure':level==='yellow'?'MODERATE exposure':'LOW exposure';
+  const exHtml=(arr,cls)=>arr.map(o=>`<div class="ex ${cls}"><b>${esc(o.exp)}</b><div class="move">First move: ${esc(o.move)}</div></div>`).join("");
+  const el=document.getElementById("snapOut");if(!el)return;
+  el.innerHTML=`<div class="card">
+    <div class="toolbar noprint" style="justify-content:flex-end">
+      <button class="btn ghost sm" onclick="window.print()">⎙ Print readout</button>
+      <button class="btn ghost sm" onclick="copyReadout()">⧉ Copy text</button>
+      <button class="btn sm" onclick="saveSnapshotAndPropose()">§ Save &amp; propose</button>
+      <button class="btn gold sm" onclick="saveSnapshot()">✓ Save to record</button>
+    </div>
+    <h2>AI Governance Snapshot — Readout</h2>
+    <div class="desc">${esc(snapFirm||'[Firm]')} · Segment: ${SEG[snapSeg].name} · ${today()}</div>
+    <div class="inline"><span class="badge" style="background:var(--${level}bg);color:var(--${level})">${levelTxt}</span>
+      <span class="legend">${reds.length} red · ${yellows.length} yellow · ${greens.length} green · ${answered}/${qs.length} scored</span></div>
+    <div class="scorebar"><i style="width:${risk}%;background:var(--${level})"></i></div>
+    ${reds.length?`<h3>Top exposures — address first</h3>${exHtml(reds,'red')}`:''}
+    ${yellows.length?`<h3>In use, needs governance</h3>${exHtml(yellows,'yellow')}`:''}
+    ${greens.length?`<h3>Fine as run</h3>${exHtml(greens,'green')}`:''}
+    ${!scored?`<div class="empty">Score the tripwires above to generate the readout.</div>`:''}
+    <div class="note">Recommended next step: a written AI-use policy and the review steps that close the reds, then ongoing oversight scaled to the firm. The Snapshot proves the gap; the engagement closes it. Not legal advice.</div>
+  </div>`;
+}
+function readoutText(){
+  const qs=SNAP[snapSeg];const reds=[],yellows=[];
+  qs.forEach((o,i)=>{const v=snapAns[i];if(v==='red')reds.push(o);else if(v==='yellow')yellows.push(o);});
+  let t=`AI GOVERNANCE SNAPSHOT — READOUT\n${snapFirm||'[Firm]'} · ${SEG[snapSeg].name} · ${today()}\n\n`;
+  if(reds.length){t+="TOP EXPOSURES — ADDRESS FIRST\n";reds.forEach(o=>t+=`• ${o.exp}\n   First move: ${o.move}\n`);t+="\n";}
+  if(yellows.length){t+="IN USE, NEEDS GOVERNANCE\n";yellows.forEach(o=>t+=`• ${o.exp}\n   First move: ${o.move}\n`);t+="\n";}
+  t+="NEXT STEP: a written AI-use policy and review steps that close the reds, then ongoing oversight. Not legal advice.\n\n"+sig();
+  return t;
+}
+function copyReadout(){copyText(readoutText());}
+function saveSnapshot(){
+  state.snapshots.push({id:uid(),firm:snapFirm,segment:snapSeg,date:today(),answers:{...snapAns}});
+  save();toast("Snapshot saved to record.");
+}
+function saveSnapshotAndPropose(){
+  const id=uid();
+  state.snapshots.push({id,firm:snapFirm,segment:snapSeg,date:today(),answers:{...snapAns}});
+  save();proSel=id;go('proposals');
+}
+
+/* ---------- POLICIES ---------- */
+let polType="brokerage";let polData={};
+VIEWS.policies=function(){
+  const d=polData;
+  return `
+  <div class="card noprint">
+    <h2>Generate an AI-use policy</h2>
+    <div class="seg-tabs">
+      <button class="${polType==='brokerage'?'active':''}" onclick="setPol('brokerage')">Brokerage (broker + agents)</button>
+      <button class="${polType==='escrowtitle'?'active':''}" onclick="setPol('escrowtitle')">Escrow / Title (WISP addendum)</button>
+    </div>
+    <div class="row">
+      <div><label>Firm / company name</label><input id="pf" value="${esc(d.firm||'')}" oninput="polData.firm=this.value;buildPolicy()"></div>
+      <div><label>${polType==='brokerage'?'Responsible broker (name, DRE #)':'Qualified individual / ISP owner'}</label><input id="pb" value="${esc(d.broker||'')}" oninput="polData.broker=this.value;buildPolicy()"></div>
+    </div>
+    <div class="row">
+      <div><label>Questions to (contact)</label><input id="pc" value="${esc(d.contact||'')}" oninput="polData.contact=this.value;buildPolicy()"></div>
+      <div><label>Effective date</label><input id="pd" type="date" value="${d.date||today()}" oninput="polData.date=this.value;buildPolicy()"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="toolbar noprint" style="justify-content:flex-end">
+      <button class="btn ghost sm" onclick="window.print()">⎙ Print</button>
+      <button class="btn ghost sm" onclick="copyText(document.getElementById('polOut').textContent)">⧉ Copy</button>
+      <button class="btn gold sm" onclick="savePolicy()">✓ Save to record</button>
+    </div>
+    <div class="out" id="polOut"></div>
+  </div>`;
+};
+function setPol(t){polType=t;render();buildPolicy();}
+function buildPolicy(){const d={...polData,email:state.identity.email,practice:state.identity.practice};
+  const txt=polType==='brokerage'?policyBrokerage(d):policyEscrowTitle(d);
+  const el=document.getElementById("polOut");if(el)el.textContent=txt;}
+function savePolicy(){state.policies.push({id:uid(),type:polType,firm:polData.firm||'',date:today()});save();toast("Policy saved to record.");}
+
+/* ---------- VETTING ---------- */
+let vet={};
+VIEWS.vetting=function(){
+  const v=vet;
+  const f=(k,lbl,opts)=>`<div><label>${lbl}</label><select onchange="vet.${k}=this.value;buildVet()">${['',...opts].map(o=>`<option ${v[k]===o?'selected':''}>${o}</option>`).join('')}</select></div>`;
+  return `
+  <div class="card noprint">
+    <h2>AI tool / vendor assessment</h2>
+    <div class="desc">Score a tool before it's approved. Any single red gate blocks approval until resolved.</div>
+    <div class="row"><div><label>Vendor / product</label><input oninput="vet.name=this.value" value="${esc(v.name||'')}"></div>
+    <div><label>Intended use / segment</label><input oninput="vet.use=this.value" value="${esc(v.use||'')}"></div></div>
+    <div class="row">
+      ${f('train','Trains on our data?',['No (contractual)','Unclear','Yes'])}
+      ${f('npi','Will it touch NPI / client PII?',['No','Yes — and approved/secured','Yes — not yet secured'])}
+    </div>
+    <div class="row">
+      ${f('sec','Security (encryption, access, certs)?',['Documented','Partial','Unknown'])}
+      ${f('breach','Breach notification terms?',['Yes','Unclear','None'])}
+    </div>
+    <div class="row">
+      ${f('transparency','Model/version transparency & limits?',['Documented','Partial','None'])}
+      ${f('bias','Fair-lending/bias evidence (if value/credit)?',['Provided','N/A','Required-missing'])}
+    </div>
+  </div>
+  <div class="card"><div class="toolbar noprint" style="justify-content:flex-end">
+      <button class="btn gold sm" onclick="saveVendor()">✓ Save to register</button></div>
+    <div id="vetOut"></div></div>`;
+};
+function buildVet(){
+  const v=vet;const gates=[];
+  if(v.train==='Yes')gates.push("Vendor trains on our data — require no-training terms or reject.");
+  if(v.npi==='Yes — not yet secured')gates.push("Touches NPI without being secured/approved — Safeguards/Pillar 3 blocker.");
+  if(v.sec==='Unknown')gates.push("Security undocumented — obtain evidence before approval.");
+  if(v.breach==='None')gates.push("No breach-notification terms — required for NPI-touching tools.");
+  if(v.bias==='Required-missing')gates.push("Fair-lending/bias evidence required and missing.");
+  const warns=[];
+  if(v.train==='Unclear')warns.push("Training-on-data terms unclear — clarify in writing.");
+  if(v.npi==='Yes — and approved/secured')warns.push("NPI-capable — keep inside the WISP and access-controlled.");
+  if(v.transparency!=='Documented'&&v.transparency)warns.push("Model transparency limited — document known limits.");
+  let verdict,cls;
+  if(gates.length){verdict="REJECT / CONDITIONS REQUIRED";cls="red";}
+  else if(warns.length){verdict="APPROVE WITH CONDITIONS";cls="yellow";}
+  else if(v.name){verdict="APPROVE";cls="green";}
+  else{verdict="Awaiting input";cls="gray";}
+  const el=document.getElementById("vetOut");if(!el)return;
+  el.innerHTML=`<h2>${esc(v.name||'Vendor')} — assessment</h2>
+    <div class="inline"><span class="badge" style="background:var(--${cls==='gray'?'line':cls}bg,#eef1f6);color:var(--${cls==='gray'?'muted':cls})">${verdict}</span></div>
+    ${gates.length?`<h3>Blocking gates</h3>${gates.map(g=>`<div class="ex red">${esc(g)}</div>`).join('')}`:''}
+    ${warns.length?`<h3>Conditions</h3>${warns.map(g=>`<div class="ex yellow">${esc(g)}</div>`).join('')}`:''}
+    ${!gates.length&&!warns.length&&v.name?`<div class="ex green">No blocking issues found. Add to approved-tool list with its max data class and a review date.</div>`:''}
+    <div class="note">Require terms that prohibit training on your data, define security & breach notification, and let you meet your own regulatory obligations.</div>`;
+}
+function saveVendor(){if(!vet.name){toast("Add a vendor name first.");return;}state.vendors.push({...vet,id:uid(),date:today()});save();toast("Saved to vendor register.");}
+
+/* ---------- RISKS ---------- */
+VIEWS.risks=function(){
+  const rows=state.risks.map(r=>`<tr><td>${esc(r.risk)}</td><td><span class="pill ${r.sev==='High'?'red':r.sev==='Medium'?'yellow':'gray'}">${r.sev}</span></td><td>${esc(r.client||'—')}</td><td>${esc(r.mit||'')}</td><td>${esc(r.owner||'')}</td><td><button class="btn sm danger" onclick="delRisk('${r.id}')">✕</button></td></tr>`).join("")||`<tr><td colspan=6 class="empty">No risks logged</td></tr>`;
+  return `<div class="card noprint"><h2>Add a client AI risk</h2>
+    <div class="row">
+      <div style="flex:2"><label>Risk</label><input id="rk"></div>
+      <div><label>Severity</label><select id="rs"><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <div><label>Client</label><input id="rc"></div>
+    </div>
+    <div class="row"><div style="flex:2"><label>Mitigation</label><input id="rm"></div>
+      <div><label>Owner</label><input id="ro"></div>
+      <div style="flex:0"><label>&nbsp;</label><button class="btn" onclick="addRisk()">Add</button></div></div>
+  </div>
+  <div class="card"><h2>Risk register</h2><table><tr><th>Risk</th><th>Sev</th><th>Client</th><th>Mitigation</th><th>Owner</th><th></th></tr>${rows}</table></div>`;
+};
+function addRisk(){const r=document.getElementById('rk').value.trim();if(!r){toast("Enter a risk.");return;}
+  state.risks.push({id:uid(),risk:r,sev:document.getElementById('rs').value,client:document.getElementById('rc').value,mit:document.getElementById('rm').value,owner:document.getElementById('ro').value});save();render();}
+function delRisk(id){state.risks=state.risks.filter(x=>x.id!==id);save();render();}
+
+/* ---------- CLIENTS / PIPELINE ---------- */
+let cliFilter="all";
+VIEWS.clients=function(){
+  const list=state.clients.filter(c=>cliFilter==='all'||c.segment===cliFilter);
+  const rows=list.map(c=>`<tr>
+    <td>${esc(c.firm)}<div style="color:var(--muted);font-size:12px">${esc(c.contact||'')}</div></td>
+    <td><span class="pill blue">${SEG[c.segment].short}</span></td>
+    <td>${stageSel(c.id,c.stage)}</td>
+    <td><input style="font-size:12px;padding:5px 7px" value="${esc(c.nextAction||'')}" onchange="updCli('${c.id}','nextAction',this.value)"></td>
+    <td><input style="font-size:12px;padding:5px 7px" type="date" value="${c.lastTouch||''}" onchange="updCli('${c.id}','lastTouch',this.value)"></td>
+    <td><button class="btn sm ghost" onclick="cliToOutreach('${c.id}')">✉</button> <button class="btn sm danger" onclick="delCli('${c.id}')">✕</button></td>
+  </tr>`).join("")||`<tr><td colspan=6 class="empty">No clients</td></tr>`;
+  const filt=['all',...SEGLIST].map(s=>`<button class="${cliFilter===s?'active':''}" onclick="cliFilter='${s}';render()">${s==='all'?'All':SEG[s].short}</button>`).join("");
+  return `<div class="card noprint"><h2>Add prospect / client</h2>
+    <div class="row">
+      <div style="flex:2"><label>Firm</label><input id="cf"></div>
+      <div><label>Contact</label><input id="cc"></div>
+      <div><label>Segment</label><select id="cs">${SEGLIST.map(s=>`<option value="${s}">${SEG[s].name}</option>`).join('')}</select></div>
+      <div style="flex:0"><label>&nbsp;</label><button class="btn" onclick="addCli()">Add</button></div>
+    </div></div>
+  <div class="card"><div class="inline" style="justify-content:space-between"><h2>Pipeline</h2><div class="seg-tabs" style="margin:0">${filt}</div></div>
+    <table><tr><th>Firm</th><th>Seg</th><th>Stage</th><th>Next action</th><th>Last touch</th><th></th></tr>${rows}</table>
+    <div class="legend">Stages: ${STAGES.join(" → ")}</div></div>`;
+};
+function stageSel(id,cur){return `<select style="font-size:12px;padding:5px 7px" onchange="updCli('${id}','stage',this.value)">${STAGES.map(s=>`<option ${s===cur?'selected':''}>${s}</option>`).join('')}</select>`;}
+function addCli(){const f=document.getElementById('cf').value.trim();if(!f){toast("Enter a firm.");return;}
+  state.clients.push({id:uid(),firm:f,contact:document.getElementById('cc').value,segment:document.getElementById('cs').value,stage:"Not contacted",nextAction:"Send warm email",lastTouch:""});save();render();}
+function updCli(id,k,v){const c=state.clients.find(x=>x.id===id);if(c){c[k]=v;save();if(k==='stage')render();}}
+function delCli(id){state.clients=state.clients.filter(x=>x.id!==id);save();render();}
+function cliToOutreach(id){const c=state.clients.find(x=>x.id===id);if(c){outSeg=c.segment;outData={first:(c.contact||'').split(' ')[0],firm:c.firm,hook:''};go('outreach');}}
+
+/* ---------- OUTREACH ---------- */
+let outSeg="escrow";let outData={};
+VIEWS.outreach=function(){
+  const d=outData;
+  const tabs=[...SEGLIST,'partner'].map(s=>`<button class="${outSeg===s?'active':''}" onclick="outSeg='${s}';render();buildOut()">${s==='partner'?'Referral partner':SEG[s].name}</button>`).join("");
+  return `<div class="card noprint"><h2>Outreach studio</h2>
+    <div class="seg-tabs">${tabs}</div>
+    <div class="row">
+      <div><label>First name</label><input value="${esc(d.first||'')}" oninput="outData.first=this.value;buildOut()"></div>
+      <div><label>Firm</label><input value="${esc(d.firm||'')}" oninput="outData.firm=this.value;buildOut()"></div>
+    </div>
+    <div><label>Personal hook (the one thing not to fabricate)</label><textarea oninput="outData.hook=this.value;buildOut()" placeholder="A real detail: a listing, a relationship, something you know about their firm.">${esc(d.hook||'')}</textarea></div>
+  </div>
+  <div class="card"><div class="toolbar noprint" style="justify-content:flex-end">
+      <button class="btn ghost sm" onclick="copyText(document.getElementById('outOut').textContent)">⧉ Copy draft</button></div>
+    <div class="out" id="outOut"></div>
+    <div class="note">Draft only — personalize the hook and send manually. Generic = ignored.</div></div>`;
+};
+function buildOut(){const el=document.getElementById("outOut");if(el)el.textContent=OUTREACH[outSeg](outData);}
+
+/* ---------- KNOWLEDGE ---------- */
+let kbSeg="escrow";
+VIEWS.knowledge=function(){
+  const tabs=SEGLIST.map(s=>`<button class="${kbSeg===s?'active':''}" onclick="kbSeg='${s}';render()">${SEG[s].name}</button>`).join("");
+  const k=KB[kbSeg];
+  const items=k.items.map(([t,d])=>`<div class="ex"><b>${esc(t)}</b><div class="move">${esc(d)}</div></div>`).join("");
+  const faq=FAQ.map(([q,a])=>`<div style="margin-bottom:12px"><b>${esc(q)}</b><div style="color:var(--slate);font-size:13px;margin-top:3px">${esc(a)}</div></div>`).join("");
+  return `<div class="card"><div class="seg-tabs">${tabs}</div><h2>${esc(k.title)}</h2>${items}
+    <div class="note">Anchors current as of June 2026. Not legal advice — flag when a client needs their own counsel.</div></div>
+  <div class="card"><h2>Objection handling / FAQ</h2>${faq}</div>`;
+};
+
+/* ---------- PROPOSALS ---------- */
+const STAKE={
+  broker:"A fair-housing complaint or a steering claim from AI-written marketing lands on the broker's license.",
+  agent:"Published AI copy and images carry the agent's name and license; fair-housing and misrepresentation are personal.",
+  escrow:"NPI in an ungoverned tool is an FTC-Safeguards breach with a 30-day reporting clock, and AI-amplified wire fraud is a direct-loss risk.",
+  title:"NPI and vendor AI fall under ALTA Pillar 3, and an AI-assisted determination without human ownership is a professional-liability claim.",
+  appraisal:"AI that compromises independence or supports a predetermined value is a USPAP and fair-lending exposure."
+};
+const SCOPE={
+  broker:["A written firm AI-use policy with the mandatory fair-housing review step","An approved-tool list and a data rule (no client PII in consumer tools)","A short agent training session and a do/don't card","Vendor AI vetting as features appear","Ongoing oversight a few days a month"],
+  agent:["A written AI-use policy and an agent do/don't card","A fair-housing self-check for AI-assisted listings","A verify-before-publish rule for AI facts and image disclosure","Consent and PII guardrails","Ongoing oversight through the firm"],
+  escrow:["An AI addendum to your WISP (which tools may touch NPI; no-training terms)","An AI-aware, deepfake-resistant wire-verification checklist","Vendor AI due diligence for escrow-software features","An incident path tied to the 30-day Safeguards clock","Ongoing oversight a few days a month"],
+  title:["An AI addendum mapped to ALTA Pillars 2 & 3 and the Safeguards Rule","A title-AI review standard (a qualified human owns every determination)","Vendor AI review under Pillar 3 third-party oversight","An AI-aware wire-verification checklist","Ongoing oversight a few days a month"],
+  appraisal:["A written AI-use policy respecting USPAP and appraiser independence","A bias-testing approach for value/credit-relevant AI","An AVM quality-control program where AVMs are used","Tool/vendor vetting with no-training terms","Ongoing oversight"]
+};
+function snapExposures(rec){const qs=SNAP[rec.segment]||[];const reds=[],yellows=[];qs.forEach((o,i)=>{const v=rec.answers&&rec.answers[i];if(v==='red')reds.push(o);else if(v==='yellow')yellows.push(o);});return{reds,yellows};}
+function proposalText(rec,opts){
+  const id=state.identity;const ex=snapExposures(rec);
+  let t=`PROPOSAL — AI GOVERNANCE ENGAGEMENT\n`;
+  t+=`Prepared for: ${rec.firm||'[Firm]'}\nPrepared by: ${id.name}, ${id.practice}\nDate: ${today()}\nSegment: ${SEG[rec.segment].name}\n\n`;
+  t+=`1. SITUATION\nBased on the AI Governance Snapshot${rec.date?` completed ${rec.date}`:''}, the following exposures were identified:\n`;
+  if(ex.reds.length){t+=`\n  High — address first:\n`;ex.reds.forEach(o=>t+=`   • ${o.exp}\n`);}
+  if(ex.yellows.length){t+=`\n  In use, needs governance:\n`;ex.yellows.forEach(o=>t+=`   • ${o.exp}\n`);}
+  if(!ex.reds.length&&!ex.yellows.length)t+=`   • (Score this firm's Snapshot to populate specific exposures.)\n`;
+  t+=`\n2. WHAT'S AT STAKE\n${STAKE[rec.segment]}\n\n`;
+  t+=`3. SCOPE OF ENGAGEMENT\n`;(SCOPE[rec.segment]||[]).forEach(s=>t+=`   • ${s}\n`);
+  t+=`\n4. HOW IT WORKS\nFractional Chief AI Officer — I own the governance outcome on an ongoing basis, not a one-time deck. Work is scoped to your firm on the Snapshot, not sold as a fixed package. Cadence: ${opts.days||'a few'} day(s) a month.\n`;
+  t+=`\n5. INVESTMENT\n${opts.invest||'Scoped per engagement on the Snapshot. The Snapshot itself is free. Far less than the full-time CAIO this work would otherwise require, and a fraction of what a single bad outcome would cost.'}\n`;
+  t+=`\n6. WHY LODESTAR\n${id.creds}\nIndependent of any vendor — no referral fees, no kickbacks.\n`;
+  t+=`\n7. NEXT STEP\nReply to confirm scope, or book here: ${id.booking}\n${id.name} · ${id.email} · ${id.phone}\n`;
+  t+=`\nNot legal advice. Lodestar builds governance that respects the rules and flags when you need your own counsel.`;
+  return t;
+}
+let proSel="";let proOpts={};
+VIEWS.proposals=function(){
+  const snaps=state.snapshots;
+  if(!proSel&&snaps.length)proSel=snaps[snaps.length-1].id;
+  const options=snaps.map(s=>`<option value="${s.id}" ${proSel===s.id?'selected':''}>${esc(s.firm||'[Firm]')} — ${SEG[s.segment].short} — ${s.date}</option>`).join('');
+  if(!snaps.length){return `<div class="card"><h2>Build a proposal from a Snapshot</h2>
+    <div class="empty">No saved Snapshots yet. Run a Snapshot and save it, then the proposal builds from its exposures.</div>
+    <div class="toolbar" style="justify-content:center"><button class="btn gold" onclick="go('snapshot')">◎ Run a Snapshot</button></div></div>`;}
+  return `<div class="card noprint"><h2>Build a proposal from a Snapshot</h2>
+    <div class="desc">Pick a saved Snapshot; the proposal pulls its exposures into a scoped engagement.</div>
+    <div class="row">
+      <div style="flex:2"><label>Saved Snapshot</label><select onchange="proSel=this.value;buildProposal()"><option value="">— select —</option>${options}</select></div>
+      <div><label>Cadence (days/month)</label><input value="${esc(proOpts.days||'')}" placeholder="e.g., 2" oninput="proOpts.days=this.value;buildProposal()"></div>
+    </div>
+    <div><label>Investment framing (optional — blank keeps it unquoted)</label><textarea oninput="proOpts.invest=this.value;buildProposal()" placeholder="Leave blank to use the default 'scoped per engagement' language.">${esc(proOpts.invest||'')}</textarea></div>
+  </div>
+  <div class="card"><div class="toolbar noprint" style="justify-content:flex-end">
+      <button class="btn ghost sm" onclick="window.print()">⎙ Print</button>
+      <button class="btn ghost sm" onclick="copyText(document.getElementById('proOut').textContent)">⧉ Copy</button>
+      <button class="btn ghost sm" onclick="proposalToEngagement()">◷ Add as engagement</button>
+      <button class="btn gold sm" onclick="saveProposal()">✓ Save to record</button></div>
+    <div class="out" id="proOut"></div></div>`;
+};
+function buildProposal(){const el=document.getElementById('proOut');if(!el)return;
+  const rec=state.snapshots.find(s=>s.id===proSel);
+  el.textContent=rec?proposalText(rec,proOpts):"Select a saved Snapshot above to generate the proposal.";}
+function saveProposal(){const rec=state.snapshots.find(s=>s.id===proSel);if(!rec){toast("Select a Snapshot first.");return;}state.proposals.push({id:uid(),firm:rec.firm,segment:rec.segment,date:today()});save();toast("Proposal saved to record.");}
+function proposalToEngagement(){const rec=state.snapshots.find(s=>s.id===proSel);if(!rec){toast("Select a Snapshot first.");return;}
+  state.engagements.push({id:uid(),firm:rec.firm,contact:"",segment:rec.segment,type:"Project",status:"Prospect",start:today(),days:proOpts.days||"",term:"",renewal:"",fee:proOpts.invest||"Scoped per engagement",scope:(SCOPE[rec.segment]||[]).join(" · "),notes:"From proposal"});save();toast("Added to Engagements as a prospect.");go('engagements');}
+
+/* ---------- ENGAGEMENTS / RETAINERS ---------- */
+const ETYPE=["Snapshot","Discovery","Project","Retainer"];
+const ESTAT=["Prospect","Active","Paused","Completed"];
+function daysUntil(d){try{return Math.ceil((new Date(d+"T00:00:00")-new Date())/86400000);}catch(e){return 9999;}}
+let engFilter="all";
+VIEWS.engagements=function(){
+  const list=state.engagements.filter(e=>engFilter==='all'||e.status===engFilter);
+  const sel=(id,k,cur,arr)=>`<select style="font-size:12px;padding:5px 7px" onchange="updEng('${id}','${k}',this.value)">${arr.map(t=>`<option ${t===cur?'selected':''}>${t}</option>`).join('')}</select>`;
+  const rows=list.map(e=>`<tr>
+    <td>${esc(e.firm)}<div style="color:var(--muted);font-size:12px">${esc(e.contact||'')}</div></td>
+    <td><span class="pill blue">${SEG[e.segment].short}</span></td>
+    <td>${sel(e.id,'type',e.type,ETYPE)}</td>
+    <td>${sel(e.id,'status',e.status,ESTAT)}</td>
+    <td><input style="width:46px;font-size:12px;padding:5px 6px" value="${esc(e.days||'')}" onchange="updEng('${e.id}','days',this.value)"></td>
+    <td><input style="font-size:12px;padding:5px 6px" type="date" value="${e.renewal||''}" onchange="updEng('${e.id}','renewal',this.value)"></td>
+    <td style="max-width:260px;font-size:12px">${esc(e.scope||'')}</td>
+    <td><button class="btn sm danger" onclick="delEng('${e.id}')">✕</button></td>
+  </tr>`).join("")||`<tr><td colspan=8 class="empty">No engagements</td></tr>`;
+  const filt=['all',...ESTAT].map(s=>`<button class="${engFilter===s?'active':''}" onclick="engFilter='${s}';render()">${s==='all'?'All':s}</button>`).join("");
+  const soon=state.engagements.filter(e=>e.renewal&&e.status==='Active'&&daysUntil(e.renewal)<=30);
+  const alert=soon.length?`<div class="note">⏰ ${soon.length} active retainer(s) renewing within 30 days: ${soon.map(e=>esc(e.firm)+' ('+e.renewal+')').join(' · ')}</div>`:'';
+  return `<div class="card noprint"><h2>Add engagement</h2>
+    <div class="row">
+      <div style="flex:2"><label>Firm</label><input id="ef"></div>
+      <div><label>Contact</label><input id="ec"></div>
+      <div><label>Segment</label><select id="es">${SEGLIST.map(s=>`<option value="${s}">${SEG[s].short}</option>`).join('')}</select></div>
+      <div><label>Type</label><select id="et">${ETYPE.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div style="flex:0"><label>&nbsp;</label><button class="btn" onclick="addEng()">Add</button></div>
+    </div></div>
+  <div class="card"><div class="inline" style="justify-content:space-between"><h2>Engagements &amp; retainers</h2><div class="seg-tabs" style="margin:0">${filt}</div></div>
+    ${alert}
+    <table><tr><th>Firm</th><th>Seg</th><th>Type</th><th>Status</th><th>Days/mo</th><th>Renewal</th><th>Scope</th><th></th></tr>${rows}</table>
+    <div class="legend">Edit type, status, cadence, and renewal inline. Renewals within 30 days are flagged above.</div></div>`;
+};
+function addEng(){const f=document.getElementById('ef').value.trim();if(!f){toast("Enter a firm.");return;}
+  state.engagements.push({id:uid(),firm:f,contact:document.getElementById('ec').value,segment:document.getElementById('es').value,type:document.getElementById('et').value,status:"Prospect",start:today(),days:"",term:"",renewal:"",fee:"Scoped per engagement",scope:"",notes:""});save();render();}
+function updEng(id,k,v){const e=state.engagements.find(x=>x.id===id);if(e){e[k]=v;save();if(k==='status'||k==='renewal')render();}}
+function delEng(id){state.engagements=state.engagements.filter(x=>x.id!==id);save();render();}
+
+/* ---------- SETTINGS ---------- */
+VIEWS.settings=function(){
+  const i=state.identity;
+  const f=(k,l)=>`<div><label>${l}</label><input value="${esc(i[k]||'')}" onchange="state.identity.${k}=this.value;save()"></div>`;
+  return `<div class="card"><h2>Identity & signature</h2>
+    <div class="desc">Used in outreach signatures and policy footers.</div>
+    <div class="row">${f('name','Name')}${f('practice','Practice name')}</div>
+    <div class="row">${f('email','Email')}${f('intake','Intake email')}</div>
+    <div class="row">${f('phone','Phone')}${f('booking','Booking link')}</div>
+    <div><label>Credentials line</label><input value="${esc(i.creds||'')}" onchange="state.identity.creds=this.value;save()"></div>
+  </div>
+  <div class="card"><h2>Data</h2>
+    <div class="desc">All data lives only in this browser (localStorage). Back it up with Export.</div>
+    <div class="toolbar">
+      <button class="btn ghost" onclick="exportData()">⭳ Export JSON</button>
+      <label class="btn ghost" style="cursor:pointer">⭱ Import JSON<input type="file" accept="application/json" style="display:none" onchange="importData(this)"></label>
+      <button class="btn danger" onclick="resetAll()">Reset all data</button>
+    </div>
+  </div>
+  <div class="card"><h2>About</h2>
+    <div class="desc">Lodestar CAIO Practice Operating System — a self-contained tool covering the full service: Snapshot, Snapshot-to-proposal generator, policy generation, tool/vendor vetting, risk register, clients & pipeline, engagements & retainers, outreach, and the regulatory knowledge base, across brokers, agents, escrow, title, and appraisal. Offline, no accounts, no tracking.</div>
+  </div>`;
+};
+
+/* ============================== UTIL ============================== */
+function copyText(t){navigator.clipboard?.writeText(t).then(()=>toast("Copied."),()=>toast("Copy failed — select and copy."));}
+function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="lodestar-caio-data.json";a.click();}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(d.identity){state=d;save();render();toast("Data imported.");}else toast("Not a valid file.");}catch(x){toast("Import failed.");}};r.readAsText(f);}
+function resetAll(){if(confirm("Erase all data and restore defaults?")){state=structuredClone(DEFAULTS);save();render();}}
+let toastT;function toast(m){let el=document.getElementById("toast");if(!el){el=document.createElement("div");el.id="toast";el.style.cssText="position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#16223a;color:#fff;padding:11px 20px;border-radius:9px;font-size:14px;z-index:50;box-shadow:0 6px 24px rgba(0,0,0,.25)";document.body.appendChild(el);}el.textContent=m;el.style.opacity="1";clearTimeout(toastT);toastT=setTimeout(()=>el.style.opacity="0",1900);}
+
+render();
+</script>
+</body>
+</html>
