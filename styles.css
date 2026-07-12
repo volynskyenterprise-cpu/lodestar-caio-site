@@ -387,6 +387,7 @@ footer.site .legal { margin-top: 26px; padding-top: 18px; border-top: 1px solid 
   .resource-actions .btn { width: 100%; }
   .nav-links { gap: 16px; }
   .nav-links a:not(.btn) { display: none; }
+  .nav-links a.nav-feature-link { display: inline-flex; }
   .hero .rings { display: none; }
 }
 
