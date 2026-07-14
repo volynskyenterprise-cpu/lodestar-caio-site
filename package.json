@@ -1,0 +1,8 @@
+{
+  "name": "lodestar-caio-site",
+  "private": true,
+  "description": "Static marketing site for Lodestar CAIO — tests for the shared console logic and static-page integrity.",
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.js\""
+  }
+}

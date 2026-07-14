@@ -13,6 +13,7 @@ Open `index.html` in any browser to view locally.
 | `404.html` | Not-found page |
 | `robots.txt` | Crawler directives |
 | `sitemap.xml` | Sitemap (references `lodestarcaio.com`) |
+| `js/console-core.js` | Pure logic for `console-7c3f9a2b.html`, shared with the test suite |
 
 ## Publishing to GitHub Pages
 
@@ -44,3 +45,23 @@ The repo is already initialized and committed locally. To go live:
 - **Booking** — primary "Snapshot" CTAs open the Google Calendar booking page: <https://calendar.app.google/qBp6McgzXVwvroJd9>
 - **Email** — `StanV@lodestarcaio.com`
 - **Phone** — `(818) 259-0667` (`tel:+18182590667`), in the contact areas and footer.
+
+## Tests
+
+The marketing pages are static, but `console-7c3f9a2b.html` (a linked-but-unindexed internal
+practice-management tool) has real business logic — Snapshot risk scoring, policy/proposal
+templates, state persistence. That logic lives in `js/console-core.js`, shared as a plain
+`<script>` by the page and via `require()` by the tests, so there's no build step either way.
+
+```sh
+npm test
+```
+
+Runs on Node's built-in test runner (`node --test`, no dependencies to install):
+
+- `tests/console-core.test.js` — unit tests for the Snapshot scoring/exposure logic, state
+  recovery from corrupted `localStorage`, date math, and the policy templates.
+- `tests/static-pages.test.js` — checks that every local link/anchor across the HTML pages
+  resolves, and that contact info stays consistent between the pages and this README.
+
+CI (`.github/workflows/test.yml`) runs the suite on every push and pull request.
