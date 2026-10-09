@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lodestar Labs — Evidence Infrastructure for Property Decisions</title>
+<meta name="description" content="Lodestar Labs is the product-development arm of Lodestar CAIO, incubating governed property-intelligence systems that reconcile fragmented evidence without replacing professional judgment.">
+<meta name="theme-color" content="#1a3a5c">
+<link rel="canonical" href="https://lodestarcaio.com/labs/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lodestar Labs — Evidence Infrastructure for Property Decisions">
+<meta property="og:description" content="Product development inside Lodestar CAIO: evidence orchestration, source reconciliation, explicit uncertainty, and human-reviewed property intelligence.">
+<meta property="og:site_name" content="Lodestar CAIO">
+<meta property="og:url" content="https://lodestarcaio.com/labs/">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231a3a5c'/%3E%3Cpath d='M50 12 L58 46 L50 54 L42 46 Z M50 88 L42 54 L50 46 L58 54 Z M12 50 L46 42 L54 50 L46 58 Z M88 50 L54 58 L46 50 L54 42 Z' fill='%23e0bb53'/%3E%3Ccircle cx='50' cy='50' r='4' fill='%23f3f6f9'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="logo" href="/index.html" aria-label="Lodestar CAIO home">
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
+        <rect width="100" height="100" rx="6" fill="#1a3a5c"/>
+        <path d="M50 14 L58 46 L50 54 L42 46 Z M50 86 L42 54 L50 46 L58 54 Z M14 50 L46 42 L54 50 L46 58 Z M86 50 L54 58 L46 50 L54 42 Z" fill="#e0bb53"/>
+        <circle cx="50" cy="50" r="4" fill="#f3f6f9"/>
+      </svg>
+      <span class="word">Lodestar <b>CAIO</b></span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="/index.html#problem">The problem</a>
+      <a href="/index.html#engage">How we engage</a>
+      <a href="/lodestar-method.html">The Method</a>
+      <a class="nav-feature-link active" href="/labs/">Labs</a>
+      <a href="https://experiences.lodestarcaio.com">Digital Experiences</a>
+      <a href="/about.html">About</a>
+      <a class="btn" href="mailto:StanV@lodestarcaio.com?subject=Lodestar%20Labs">Talk with Labs</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero compact">
+  <svg class="rings" width="520" height="520" viewBox="0 0 520 520" aria-hidden="true">
+    <g stroke="#3a648c" stroke-width="1" fill="none" opacity="0.7">
+      <circle cx="260" cy="260" r="250"/>
+      <circle cx="260" cy="260" r="180"/>
+      <circle cx="260" cy="260" r="110"/>
+    </g>
+    <g fill="#e0bb53">
+      <path d="M260 60 L283 246 L260 260 L237 246 Z"/>
+      <path d="M260 460 L237 274 L260 260 L283 274 Z"/>
+      <path d="M60 260 L246 237 L260 260 L246 283 Z"/>
+      <path d="M460 260 L274 283 L260 260 L274 237 Z"/>
+    </g>
+    <circle cx="260" cy="260" r="11" fill="#f3f6f9"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-inner">
+      <p class="eyebrow">Lodestar Labs · Product development</p>
+      <h1>Building the evidence infrastructure <span class="accent">for property decisions.</span></h1>
+      <p class="sub">Lodestar Labs is incubating a governed property-intelligence system that turns fragmented property, assignment, document, inspection, and market evidence into one auditable record — without replacing professional judgment.</p>
+      <div class="cta-row">
+        <a class="btn gold" href="#product">See what we're building</a>
+        <a class="btn ghost" href="mailto:StanV@lodestarcaio.com?subject=Lodestar%20Labs" style="color:#eef3f8;border-color:rgba(255,255,255,0.35)">Start a Labs conversation</a>
+      </div>
+      <div class="cred-strip">
+        <b>Incubated inside Lodestar CAIO.</b> &nbsp;Evidence before automation · Model-agnostic · Human authority first.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap lead-block">
+    <p><b>The hard part of property work is rarely generating another paragraph.</b> It is determining what the property actually is, which source is authoritative, what conflicts, what evidence is missing, and what still requires professional judgment.</p>
+    <p>Lodestar Labs is turning that problem into a product discipline: observe first, preserve provenance, surface conflicts, and make uncertainty explicit before consequential decisions are made.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="duo">
+      <div>
+        <p class="eyebrow">The problem</p>
+        <h2>Property evidence is fragmented before the decision even starts.</h2>
+        <ul class="ticks">
+          <li>Orders, MLS, public records, zoning, permits, title, documents, and field observations can disagree.</li>
+          <li>Complexity is often discovered after the assignment is already underway.</li>
+          <li>Professionals repeatedly reconstruct the same property from different systems.</li>
+          <li>Missing evidence can be mistaken for certainty when software forces an answer.</li>
+          <li>Reviewers often see the conclusion without a clean trail of how the underlying facts were established.</li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">The product thesis</p>
+        <h2>Build the evidence layer before automating the decision.</h2>
+        <ul class="ticks">
+          <li><b>Observe</b> approved sources without assuming any one source is automatically correct.</li>
+          <li><b>Reconcile</b> competing observations into explicit claims and conflicts.</li>
+          <li><b>Flag</b> missing evidence, unusual property characteristics, and assignment complexity.</li>
+          <li><b>Prepare</b> inspection and review questions before they become revision problems.</li>
+          <li><b>Preserve</b> provenance so the professional can see why a fact is trusted — or why it remains unresolved.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="product">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Product 0 · Working name</p>
+      <h2>Property Evidence &amp; Complexity Preflight</h2>
+      <p>Address + assignment + available documents in. A structured, source-backed evidence package out.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="step">01</span>
+        <h3>Evidence Ledger</h3>
+        <p>Every material observation carries a source, timestamp, provenance, freshness, and authority context instead of becoming an unattributed fact.</p>
+        <span class="tag">Source-backed</span>
+      </div>
+      <div class="card">
+        <span class="step">02</span>
+        <h3>Conflict &amp; Gap Engine</h3>
+        <p>When sources disagree, the system preserves both. When evidence is missing, the system can return UNRESOLVED instead of manufacturing certainty.</p>
+        <span class="tag">Explicit uncertainty</span>
+      </div>
+      <div class="card">
+        <span class="step">03</span>
+        <h3>Professional Review</h3>
+        <p>The system explains why an issue matters and what should be verified. Consequential appraisal, legal, credit, and client decisions remain with the authorized professional.</p>
+        <span class="tag">Human authority</span>
+      </div>
+    </div>
+    <div class="moat" style="margin-top:34px;">
+      <b>Product boundary:</b> Lodestar Labs is not building an AVM or an automated appraisal-conclusion engine. The current product work focuses on evidence orchestration, complexity detection, inspection preparation, research reconciliation, and auditable decision support.
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Validation loop</p>
+      <h2>Built against real property workflows, not synthetic demos.</h2>
+      <p>The current pilot follows a property from preflight through field observation, post-inspection research, comparable evidence, and final reconciliation.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="step">A</span>
+        <h3>Preflight</h3>
+        <p>Establish property identity, source conflicts, missing documents, legal/use questions, and inspection priorities before substantive valuation analysis.</p>
+      </div>
+      <div class="card">
+        <span class="step">B</span>
+        <h3>Field Delta</h3>
+        <p>Compare what the evidence predicted with what the professional actually observes, separating confirmations, resolved conflicts, new findings, and true preflight misses.</p>
+      </div>
+      <div class="card">
+        <span class="step">C</span>
+        <h3>Research &amp; Market Delta</h3>
+        <p>Add permits, zoning, listing history, market evidence, and comparable analysis while preserving the line between source-supported facts and professional judgment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Operating principles</p>
+      <h2>Trust is an architectural requirement.</h2>
+    </div>
+    <div class="duo">
+      <div>
+        <ul class="ticks">
+          <li><b>Evidence before automation.</b></li>
+          <li><b>Conflicts are surfaced, not silently resolved.</b></li>
+          <li><b>UNRESOLVED is a valid result.</b></li>
+        </ul>
+      </div>
+      <div>
+        <ul class="ticks">
+          <li><b>Deterministic rules before model judgment.</b></li>
+          <li><b>Models are replaceable reasoning engines, not the source of truth.</b></li>
+          <li><b>Human authority remains explicit at consequential boundaries.</b></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Current stage</p>
+      <h2>Early, deliberately narrow, and measurable.</h2>
+      <p>We are validating the architecture before expanding the feature surface.</p>
+    </div>
+    <div class="facts">
+      <div class="fact">
+        <div class="num">1</div>
+        <div class="lbl">Retrospective product backtest completed</div>
+      </div>
+      <div class="fact">
+        <div class="num">1</div>
+        <div class="lbl">Prospective live workflow pilot underway</div>
+      </div>
+      <div class="fact">
+        <div class="num">20</div>
+        <div class="lbl">Prospective cases targeted for the first validation cohort</div>
+      </div>
+    </div>
+    <div class="moat" style="margin-top:34px;">
+      <b>Status note:</b> Lodestar Labs is currently a product-development initiative inside Lodestar CAIO. Product names, functionality, commercial terms, and availability may change as validation continues.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Where this can go</p>
+      <h2>Start with appraisal. Build for the broader property decision stack.</h2>
+      <p>The beachhead is residential appraisal because it provides a high-information, regulated environment for proving the evidence architecture. The longer-term hypothesis is a reusable evidence layer for institutional property workflows.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <span class="step">01</span>
+        <h3>Appraisal</h3>
+        <p>Preflight, inspection preparation, evidence reconciliation, revisions, ROV support, and review traceability.</p>
+      </div>
+      <div class="card">
+        <span class="step">02</span>
+        <h3>Collateral</h3>
+        <p>AMC and lender workflows that need better complexity routing, source-backed review, and auditable property facts.</p>
+      </div>
+      <div class="card">
+        <span class="step">03</span>
+        <h3>Property Intelligence</h3>
+        <p>Adjacent title, insurance, servicing, investment, construction, and asset-management workflows where evidence quality affects high-value decisions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="cta-band">
+  <div class="wrap">
+    <h2>Help shape the evidence layer.</h2>
+    <p>If your appraisal, valuation, lending, or property-risk workflow spends too much time reconstructing property facts — or discovers complexity too late — Lodestar Labs is beginning design-partner conversations.</p>
+    <a class="btn gold" href="mailto:StanV@lodestarcaio.com?subject=Lodestar%20Labs%20Design%20Partner">Start a Labs conversation</a>
+    <div class="meta">Stan Volynsky · <a href="mailto:StanV@lodestarcaio.com">StanV@lodestarcaio.com</a></div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <div class="word">Lodestar <b>CAIO</b></div>
+        <div class="lic">
+          Lodestar Labs · Product development inside Lodestar CAIO<br>
+          Stan Volynsky · Founder · CA-Certified Residential Appraiser &amp; Licensed Broker
+        </div>
+      </div>
+      <div>
+        <div style="color:#fff;font-weight:600;margin-bottom:8px;">Explore</div>
+        <a href="/index.html">Home</a><br>
+        <a href="/lodestar-method.html">The Lodestar Method</a><br>
+        <a href="/labs/">Lodestar Labs</a><br>
+        <a href="https://experiences.lodestarcaio.com">Digital Experiences</a><br>
+        <a href="/about.html">About</a>
+      </div>
+      <div>
+        <div style="color:#fff;font-weight:600;margin-bottom:8px;">Get in touch</div>
+        <a href="mailto:StanV@lodestarcaio.com?subject=Lodestar%20Labs">Talk with Labs</a><br>
+        <a href="mailto:StanV@lodestarcaio.com">StanV@lodestarcaio.com</a><br>
+        <a href="tel:+18182590667">(818) 259-0667</a>
+      </div>
+    </div>
+    <div class="legal">
+      Lodestar Labs is a product-development initiative of Lodestar CAIO. Current work is in pilot validation and does not provide autonomous appraisal, legal, credit, or other licensed/professional conclusions. Product concepts and availability may change.<br>
+      © <span id="year"></span> Lodestar CAIO. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
